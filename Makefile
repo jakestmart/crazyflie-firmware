@@ -67,7 +67,7 @@ PROJ_OBJ += crtp.o ledseq.o freeRTOSdebug.o imu.o pm.o radiolink.o eskylink.o
 PROJ_OBJ += usec_time.o
 
 # Modules
-PROJ_OBJ += system.o comm.o console.o pid.o crtpservice.o param.o
+PROJ_OBJ += system.o comm.o console.o pid.o crtpservice.o param.o mem.o
 PROJ_OBJ += commander.o controller.o sensfusion6.o stabilizer.o
 PROJ_OBJ += log.o worker.o
 
@@ -174,7 +174,7 @@ size: compile
 #Radio bootloader
 cload:
 ifeq ($(CLOAD), 1)
-	$(CLOAD_SCRIPT) flash cflie.bin
+	$(CLOAD_SCRIPT) flash cflie.bin stm32-fw
 else
 	@echo "Only cload build can be bootloaded. Launch build and cload with CLOAD=1"
 endif
