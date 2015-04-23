@@ -43,11 +43,13 @@
 */
 
 //Fancier version
+//#define creates a macro
 #define TRUNCATE_SINT16(out, in) (out = (in<INT16_MIN)?INT16_MIN:((in>INT16_MAX)?INT16_MAX:in) )
 
 //Better semantic
 #define SATURATE_SINT16(in) ( (in<INT16_MIN)?INT16_MIN:((in>INT16_MAX)?INT16_MAX:in) )
 
+// Variables taken from the pid.h file
 PidObject pidRollRate;
 PidObject pidPitchRate;
 PidObject pidYawRate;
@@ -61,19 +63,25 @@ int16_t yawOutput;
 
 static bool isInit;
 
+//initialise the PID values - Init, Integrallimit,
 void controllerInit()
 {
   if(isInit)
     return;
   
   //TODO: get parameters from configuration manager instead
+  /**RATE INIATLISATION **/
+  //initialising for Roll, Pitch and Yaw RATES Calling pidInit from pid.c function
   pidInit(&pidRollRate, 0, PID_ROLL_RATE_KP, PID_ROLL_RATE_KI, PID_ROLL_RATE_KD, IMU_UPDATE_DT);
   pidInit(&pidPitchRate, 0, PID_PITCH_RATE_KP, PID_PITCH_RATE_KI, PID_PITCH_RATE_KD, IMU_UPDATE_DT);
   pidInit(&pidYawRate, 0, PID_YAW_RATE_KP, PID_YAW_RATE_KI, PID_YAW_RATE_KD, IMU_UPDATE_DT);
+
+  //initialising RATE limits Calling pidSetIntegralLimit from pid.c function
   pidSetIntegralLimit(&pidRollRate, PID_ROLL_RATE_INTEGRATION_LIMIT);
   pidSetIntegralLimit(&pidPitchRate, PID_PITCH_RATE_INTEGRATION_LIMIT);
   pidSetIntegralLimit(&pidYawRate, PID_YAW_RATE_INTEGRATION_LIMIT);
 
+  /**ROLL, PITCH AND YAW INIATLISATION **/
   pidInit(&pidRoll, 0, PID_ROLL_KP, PID_ROLL_KI, PID_ROLL_KD, IMU_UPDATE_DT);
   pidInit(&pidPitch, 0, PID_PITCH_KP, PID_PITCH_KI, PID_PITCH_KD, IMU_UPDATE_DT);
   pidInit(&pidYaw, 0, PID_YAW_KP, PID_YAW_KI, PID_YAW_KD, IMU_UPDATE_DT);
@@ -81,14 +89,20 @@ void controllerInit()
   pidSetIntegralLimit(&pidPitch, PID_PITCH_INTEGRATION_LIMIT);
   pidSetIntegralLimit(&pidYaw, PID_YAW_INTEGRATION_LIMIT);
   
+  //Asserts that the controller has been initialised
   isInit = true;
 }
 
+//Test if control
 bool controllerTest()
 {
   return isInit;
 }
 
+/**Rate Contoller
+ * &pidrollRate, &pidPitchRate, &pidYawRate - pointer from PID.h
+ *
+ * **/
 void controllerCorrectRatePID(
        float rollRateActual, float pitchRateActual, float yawRateActual,
        float rollRateDesired, float pitchRateDesired, float yawRateDesired)

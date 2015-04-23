@@ -33,9 +33,12 @@
 #include "led.h"
 #include "motors.h"
 
+
+//Initialize pid with required values
 void pidInit(PidObject* pid, const float desired, const float kp,
              const float ki, const float kd, const float dt)
 {
+	// '->' is the pointer
   pid->error     = 0;
   pid->prevError = 0;
   pid->integ     = 0;
@@ -49,6 +52,8 @@ void pidInit(PidObject* pid, const float desired, const float kp,
   pid->dt        = dt;
 }
 
+//PID updates the value according to the error
+//Measured is taken from the PID
 float pidUpdate(PidObject* pid, const float measured, const bool updateError)
 {
     float output;
@@ -70,14 +75,16 @@ float pidUpdate(PidObject* pid, const float measured, const bool updateError)
 
     pid->deriv = (pid->error - pid->prevError) / pid->dt;
 
+    //Updating the PID values to the PID for control
     pid->outP = pid->kp * pid->error;
     pid->outI = pid->ki * pid->integ;
     pid->outD = pid->kd * pid->deriv;
 
+    //Final PID value updated and returned to output
     output = pid->outP + pid->outI + pid->outD;
 
     pid->prevError = pid->error;
-
+    //Output returned to code NOT PID, PID values updated via pid.h header file.
     return output;
 }
 

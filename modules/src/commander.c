@@ -23,19 +23,22 @@
  *
  *
  */
-#include "stm32f10x_conf.h"
+#include "stm32f10x_conf.h" //CPU header file
 
-#include "FreeRTOS.h"
+#include "FreeRTOS.h"	//Operating system header file
 #include "task.h"
 
 #include "commander.h"
-#include "crtp.h"
+#include "crtp.h"		//Communication protocol
 #include "configblock.h"
 #include "param.h"
 
 #define MIN_THRUST  10000
 #define MAX_THRUST  60000
 
+// Struct is used to group variables
+// http://www.cprogramming.com/tutorial/c/lesson7.html
+// __attribute__((packed)) ensures that variables are
 struct CommanderCrtpValues
 {
   float roll;
