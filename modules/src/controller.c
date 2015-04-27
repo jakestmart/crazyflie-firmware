@@ -99,7 +99,7 @@ bool controllerTest()
   return isInit;
 }
 
-/**Rate Contoller
+/**Rate: P-Control
  * &pidrollRate, &pidPitchRate, &pidYawRate - pointer from PID.h
  *
  * **/
@@ -117,19 +117,21 @@ void controllerCorrectRatePID(
   TRUNCATE_SINT16(yawOutput, pidUpdate(&pidYawRate, yawRateActual, TRUE));
 }
 
+//Attitude control: PI-Control
 void controllerCorrectAttitudePID(
        float eulerRollActual, float eulerPitchActual, float eulerYawActual,
        float eulerRollDesired, float eulerPitchDesired, float eulerYawDesired,
        float* rollRateDesired, float* pitchRateDesired, float* yawRateDesired)
 {
+	//Update rollRateDesired for Attitude via PID
   pidSetDesired(&pidRoll, eulerRollDesired);
   *rollRateDesired = pidUpdate(&pidRoll, eulerRollActual, TRUE);
 
-  // Update PID for pitch axis
+  // Update pitchRateDesired for Attitude via PID
   pidSetDesired(&pidPitch, eulerPitchDesired);
   *pitchRateDesired = pidUpdate(&pidPitch, eulerPitchActual, TRUE);
 
-  // Update PID for yaw axis
+  // Update yawRateDesired for Attitude via PID
   float yawError;
   yawError = eulerYawDesired - eulerYawActual;
   if (yawError > 180.0)
@@ -150,6 +152,7 @@ void controllerResetAllPID(void)
   pidReset(&pidYawRate);
 }
 
+//Takes the output from the control loop? to go to the motors??
 void controllerGetActuatorOutput(int16_t* roll, int16_t* pitch, int16_t* yaw)
 {
   *roll = rollOutput;

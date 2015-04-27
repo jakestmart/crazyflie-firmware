@@ -36,9 +36,18 @@
 #define MIN_THRUST  10000
 #define MAX_THRUST  60000
 
+/*Commander takes input from client via transmitter CRTP protocol and asserts values.
+ * Basically the gateway into the quadcopter from the transmitter*/
+
+
 // Struct is used to group variables
 // http://www.cprogramming.com/tutorial/c/lesson7.html
 // __attribute__((packed)) ensures that variables are
+
+//CommanderCrtpValues - Protocol used to send data to/from Crazyflie.
+//Structure that contains Roll, pitch, yaw and thrust.
+//CRTP = Crazyflie Real Time Protocol
+//Each packet has 32 bytes
 struct CommanderCrtpValues
 {
   float roll;
@@ -47,6 +56,7 @@ struct CommanderCrtpValues
   uint16_t thrust;
 } __attribute__((packed));
 
+//NEED TO UNDERSTAND WHAT TARGETVAL[2] means2
 static struct CommanderCrtpValues targetVal[2];
 static bool isInit;
 static int side=0;
@@ -55,6 +65,7 @@ static bool isInactive;
 static bool altHoldMode = FALSE;
 static bool altHoldModeOld = FALSE;
 
+//CommanderCrtpCB
 static void commanderCrtpCB(CRTPPacket* pk);
 static void commanderWatchdogReset(void);
 
@@ -78,6 +89,8 @@ bool commanderTest(void)
   return isInit;
 }
 
+//UNDERSTAND WHAT PK is and WHERE
+// "->" is equivalent to a pointer
 static void commanderCrtpCB(CRTPPacket* pk)
 {
   targetVal[!side] = *((struct CommanderCrtpValues*)pk->data);
@@ -120,6 +133,7 @@ uint32_t commanderGetInactivityTime(void)
   return xTaskGetTickCount() - lastUpdate;
 }
 
+//Takes RPY from targetVal from transmitter and asserts to eulerRPYdesired
 void commanderGetRPY(float* eulerRollDesired, float* eulerPitchDesired, float* eulerYawDesired)
 {
   int usedSide = side;
@@ -137,7 +151,7 @@ void commanderGetAltHold(bool* altHold, bool* setAltHold, float* altHoldChange)
   altHoldModeOld = altHoldMode;
 }
 
-
+//Setting types
 void commanderGetRPYType(RPYType* rollType, RPYType* pitchType, RPYType* yawType)
 {
   *rollType  = ANGLE;
@@ -145,6 +159,7 @@ void commanderGetRPYType(RPYType* rollType, RPYType* pitchType, RPYType* yawType
   *yawType   = RATE;
 }
 
+//Taking thurst from client across transmitter via targetVal
 void commanderGetThrust(uint16_t* thrust)
 {
   int usedSide = side;
