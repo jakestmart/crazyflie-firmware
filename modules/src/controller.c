@@ -41,7 +41,7 @@
     else out = (int16_t)in;\
   }
 */
-
+//CONTROLLER EDIT FOR PUSH
 //Fancier version
 //#define creates a macro
 #define TRUNCATE_SINT16(out, in) (out = (in<INT16_MIN)?INT16_MIN:((in>INT16_MAX)?INT16_MAX:in) )
