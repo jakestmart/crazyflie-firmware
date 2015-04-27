@@ -66,6 +66,10 @@ static void crtpRxTask(void *param);
 static xQueueHandle queues[CRTP_NBR_OF_PORTS];
 static volatile CrtpCallback callbacks[CRTP_NBR_OF_PORTS];
 
+
+/*Initiates crtp protocol
+ * Creates a queue for transmit and receive
+ * Creates tasks for transmit (Tx) and receive (Rx) */
 void crtpInit(void)
 {
   if(isInit)
@@ -87,6 +91,7 @@ bool crtpTest(void)
   return isInit;
 }
 
+
 void crtpInitTaskQueue(CRTPPort portId)
 {
   ASSERT(queues[portId] == NULL);
@@ -94,6 +99,7 @@ void crtpInitTaskQueue(CRTPPort portId)
   queues[portId] = xQueueCreate(1, sizeof(CRTPPacket));
 }
 
+// Task to receive packet and puts value into a port ID
 int crtpReceivePacket(CRTPPort portId, CRTPPacket *p)
 {
   ASSERT(queues[portId]);
@@ -118,6 +124,7 @@ int crtpReceivePacketWait(CRTPPort portId, CRTPPacket *p, int wait) {
   return xQueueReceive(queues[portId], p, M2T(wait));
 }
 
+//Trasmitting a packet
 void crtpTxTask(void *param)
 {
   CRTPPacket p;
@@ -131,6 +138,7 @@ void crtpTxTask(void *param)
   }
 }
 
+//Receiving a packet
 void crtpRxTask(void *param)
 {
   CRTPPacket p;
@@ -154,6 +162,7 @@ void crtpRxTask(void *param)
   }
 }
 
+//Creating the register for each port
 void crtpRegisterPortCB(int port, CrtpCallback cb)
 {
   if (port>CRTP_NBR_OF_PORTS)
@@ -162,6 +171,7 @@ void crtpRegisterPortCB(int port, CrtpCallback cb)
   callbacks[port] = cb;
 }
 
+//Action to send the packet
 int crtpSendPacket(CRTPPacket *p)
 {
   ASSERT(p); 
@@ -186,6 +196,7 @@ int crtpReset(void)
   return 0;
 }
 
+//Check if connected
 bool crtpIsConnected(void)
 {
   if (link->isConnected)
@@ -193,6 +204,7 @@ bool crtpIsConnected(void)
   return true;
 }
 
+//Assert if packet received
 void crtpPacketReveived(CRTPPacket *p)
 {
   portBASE_TYPE xHigherPriorityTaskWoken;

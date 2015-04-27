@@ -59,6 +59,7 @@ bool crtpserviceTest(void)
   return isInit;
 }
 
+
 void crtpserviceHandler(CRTPPacket *p)
 {
   switch (p->channel)
